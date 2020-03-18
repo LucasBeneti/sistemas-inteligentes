@@ -7,7 +7,6 @@ Original file is located at
     https://colab.research.google.com/drive/1qbRCLCbmK0ar3Pa6GmaICOh1KpVZA4Ud
 """
 
-import random
 # !pip install numpy mlrose
 
 # import numpy as np
@@ -34,14 +33,16 @@ dist_matrix = [[0, 29, 82, 46, 68, 52, 72, 42, 51, 55, 29, 74, 23, 72, 46],
                [72, 43, 23, 72, 23, 61, 0, 42, 23, 31, 77, 37, 51, 46, 33],
                [42, 23, 43, 31, 52, 23, 42, 0, 33, 15, 37, 33, 33, 31, 37],
                [51, 23, 41, 62, 21, 55, 23, 33, 0, 29, 62, 46, 29, 51, 11],
-               [55, 31, 29, 42, 46, 31, 31, 15, 29, 0, 51, 21, 41, 23, 37],
+               [55, 31, 29, 42, 46, 31, 31, 15, 29, 0, 51, 55, 41, 23, 37],
                [29, 41, 79, 21, 82, 33, 77, 37, 62, 51, 0, 65, 42, 59, 61],
                [74, 51, 21, 51, 58, 37, 37, 33, 46, 21, 65, 0, 61, 11, 55],
                [23, 11, 64, 51, 46, 51, 51, 33, 29, 41, 42, 61, 0, 62, 23],
                [72, 52, 31, 43, 65, 29, 46, 31, 51, 23, 59, 11, 62, 0, 59],
                [46, 21, 51, 64, 23, 59, 33, 37, 11, 37, 61, 55, 23, 59, 0]]
-
+import random
 starting_row = random.randint(0,14)
+
+
 
 # Beam Search
 # escolhe o tamanho do feixe (valor k) e começa em um ponto aleatório
@@ -51,53 +52,54 @@ starting_row = random.randint(0,14)
 # from operator import itemgetter
 # k = 5
 
-# to_visit_list = []
-# for i in range(len(dist_matrix)):
-#   to_visit_list.append(i)
-# print(to_visit_list)
+to_visit_list = []
+for i in range(len(dist_matrix)):
+  to_visit_list.append(i)
+print(to_visit_list)
 
-# # def localBeamSearch():
-# # starting_row = random.randint(0,14)
-# # starting_row = dist_matrix[starting_i]
-# path_list = []
-# starting_list = []
-# k = 4
-# to_visit_list.remove(starting_row)
-# for i, el in enumerate(dist_matrix[starting_row]):
-#   if(el != 0):
-#     starting_list.append((i,el))
+# def localBeamSearch():
+# starting_row = random.randint(0,14)
+# starting_row = dist_matrix[starting_i]
+path_list = []
+starting_list = []
+k = 4
+to_visit_list.remove(starting_row)
+for i, el in enumerate(dist_matrix[starting_row]):
+  if(el != 0):
+    starting_list.append((i,el))
 
-# print(starting_list)
-# starting_list.sort(key= lambda x: x[1])
+print(starting_list)
+starting_list.sort(key= lambda x: x[1])
 
-# # print(starting_i)
-# # print(starting_j)
-# # print(starting_node)
-# print(starting_list)
+# print(starting_i)
+# print(starting_j)
+# print(starting_node)
+print(starting_list)
 
-# print(starting_row)
-# # localBeamSearch()
-# print(to_visit_list)
+print(starting_row)
+# localBeamSearch()
+print(to_visit_list)
 
 visits_count = 0
-# really_final_list = []
+really_final_list = []
 # passa a contagem de nodes visitados, node de início, lista de nodes para visitar
 def findSmallestCostOnRow(node_row, to_visit_list, final_node_list=[], count=0):
-  print("Iteration: ", count)
+  curr_node = node_row
+  # print("Iteration: ", count)
   visits_count = count
   curr_to_visit_list = to_visit_list
-  print("Current visit list: ", curr_to_visit_list)
+  # print("Current visit list: ", curr_to_visit_list)
   curr_final_node_list = final_node_list
 
   if(visits_count == 13):
-    print(curr_final_node_list)
+    print("returning this shit: ", curr_final_node_list)
     return curr_final_node_list
   else:
-    curr_to_visit_list.remove(node_row)
+    curr_to_visit_list.remove(curr_node)
     aux_list = []
     for i, el in enumerate(curr_to_visit_list):
-        aux_list.append((el,dist_matrix[node_row][el]))
-    print(aux_list)
+        aux_list.append((el,dist_matrix[curr_node][el]))
+    # print(aux_list)
     # organiza a lista me ordem de custos
     aux_list.sort(key=lambda x: x[1])
     # chain resultante desse node
@@ -108,35 +110,37 @@ def findSmallestCostOnRow(node_row, to_visit_list, final_node_list=[], count=0):
 
 # findSmallestCostOnRow(2, to_visit_list)
 
-def resetVisitList(starting_row=6):
+def resetVisitList():
   to_visit_list = []
   for i in range(len(dist_matrix)):
     to_visit_list.append(i)
   # print(to_visit_list)
-  starting_list = []
-  to_visit_list.remove(6)
+  # starting_list = []
+  to_visit_list.remove(starting_row)
   # print(to_visit_list)
   return to_visit_list
 
+starting_list = []
+for i, el in enumerate(dist_matrix[starting_row]):
+  if(el != 0):
+    starting_list.append((i,el))
 
-if __name__ == "__main__":
-  for i, el in enumerate(dist_matrix[6]):
-    if(el != 0):
-      starting_list.append((i,el))
-
-  print(starting_list)
-  starting_list.sort(key= lambda x: x[1])
-  k = 4;
-  ksmallest_nodes = starting_list[0:k]
-  print(starting_list)
-  print(ksmallest_nodes)
-  all_runs = []
+print(starting_list)
+starting_list.sort(key= lambda x: x[1])
+k = 4;
+ksmallest_nodes = starting_list[0:k]
+print(starting_list)
+print(ksmallest_nodes)
+all_runs = []
+really_final_list = []
+blabla =[]
+for node in ksmallest_nodes:
+  to_visit = resetVisitList()
+  print(node[0])
+  # all_runs.append(findSmallestCostOnRow(ksmallest_nodes[0][0], to_visit_list, really_final_list))
+  # tem que descobrir por que a lista não está sendo retornada
+  blabla = findSmallestCostOnRow(node[0], to_visit, really_final_list)
   really_final_list = []
-  for node in ksmallest_nodes:
-    to_visit = resetVisitList()
-    all_runs.append(findSmallestCostOnRow(node[0], to_visit_list, really_final_list))
-
-  print(all_runs)
-
-  dist_matrix[starting_row]
+  print(type(blabla))
+  # print(findSmallestCostOnRow(ksmallest_nodes[0][0], to_visit, really_final_list))
 
