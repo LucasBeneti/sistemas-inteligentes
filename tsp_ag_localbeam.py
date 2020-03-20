@@ -10,7 +10,7 @@ Original file is located at
 # !pip install numpy mlrose
 
 # import numpy as np
-# import mlrose
+import mlrose
 
 # dist_list = [(0,1,2.7), (0,2,7.50), (1,4,3.20), (2,4,2.80), (2,5,3.12), (2,3,1.25), (3,5,5.35), (4,5,2.08)]
 # # initilalizing fitness function object using dist_list
@@ -24,6 +24,9 @@ Original file is located at
 # print("Fitness at the best state: ", best_fitness)
 
 # matriz de distâncias para ser usada para a solução do problema
+
+import random
+
 dist_matrix = [[0, 29, 82, 46, 68, 52, 72, 42, 51, 55, 29, 74, 23, 72, 46], 
                [29, 0, 55, 46, 42, 43, 43, 23, 23, 31, 41, 51, 11, 52, 21], 
                [82, 55, 0, 68, 46, 55, 23, 43, 41, 29, 79, 21, 64, 31, 51], 
@@ -39,18 +42,38 @@ dist_matrix = [[0, 29, 82, 46, 68, 52, 72, 42, 51, 55, 29, 74, 23, 72, 46],
                [23, 11, 64, 51, 46, 51, 51, 33, 29, 41, 42, 61, 0, 62, 23],
                [72, 52, 31, 43, 65, 29, 46, 31, 51, 23, 59, 11, 62, 0, 59],
                [46, 21, 51, 64, 23, 59, 33, 37, 11, 37, 61, 55, 23, 59, 0]]
-import random
+
+dist_list = []
+print(len(dist_matrix))
+for i in range(len(dist_matrix)):
+  for j in range(len(dist_matrix)):
+    if(j>i):
+      dist_list.append((i,j,dist_matrix[i][j]))
+
+# dist_list = [(0,1, 29),(0,2, 82),(0,3,46),(0,4,68),(0,5,52),(0,6,72),(0,7,42),(0,8,51),(0,9,55),(0,10,29),(0,11,74),(0,12,23),(0,13,72),(0,14,46),(1,2,55),(1,3,46),(1,4,42),(1,5,43),(1,6,43),(1,7,23),(1,8,23),(1,9,31),(1,10,41),
+#              (1,11,51),(1,12,11),(1,13,52),(1,14,21),(2,3,68),(2,4,46),(2,5,55),(2,6,23),(2,7,43),(2,8,41),(2,9,29),(2,10,79),(2,11,21),(2,12,64),(2,13,31),(2,14,51),(3,4,82),(3,5,15),(3,6,72),(3,7,31),(3,8,62),(3,9,42),(3,10,21),
+#              (3,11,51),(3,12,51),(3,13,43),(3,14,64),(4,5,74),(4,6,23),(4,7,52),(4,8,21),(4,9,46),(4,10,82),(4,11,58),(4,12,46),(4,13,65),(4,14,23),(5,6,61),(5,7,23),(5,8,55),(5,9,31),(5,10,33),(5,11,37),(5,12,51),(5,13,29),(5,14,59)
+#              (6,7,42),(6,8,23),(6,9,31),(6,10,77),(6,11,37),(6,12,51),(6,13,29),(6,14,59),(7,8,33),(7,9,15),(7,10,37),(7,11,33),(7,12,33),(7,13,31),(7,14,37),(8,9,29),(8,10,62),(8,11,46),(8,12,29),(8,13,51),(8,14,11),(9,10,51),(9,11,55),
+#              (9,12,41),(9,13,23),(9,14,37),(10,11,65),(10,12,42),(10,13,59),(10,14,61),(11,12,61),(11,13,11),(11,14,55),(12,13,62),(12,14,23),(13,14,59)]
+
+# # initilalizing fitness function object using dist_list
+# fitness_dists = mlrose.TravellingSales(distances = dist_list)
+# problem_no_fit = mlrose.TSPOpt(length=6, fitness_fn=fitness_dists, maximize=False)
+# best_state, best_fitness = mlrose.genetic_alg(problem_no_fit,mutation_prob=0.2, max_attempts=100 , random_state=2)
+# print("Best state found is: ", best_state)
+# print("Fitness at the best state: ", best_fitness)
+
 starting_row = random.randint(0,14)
 
+"""
+Beam Search
+The width of the beam is the para o tamanho do feixe (valor k) e começa em um ponto aleatório
+a partir de cada iteração se escolhe os k melhores vizinhos desse nó
+inicial, e vai assim até o final. Até que todos os nós tenham sido visitado
 
-
-# Beam Search
-# escolhe o tamanho do feixe (valor k) e começa em um ponto aleatório
-# a partir de cada iteração se escolhe os k melhores vizinhos desse nó
-# inicial, e vai assim até o final. Até que todos os nós tenham sido visitado
-
-# from operator import itemgetter
-# k = 5
+from operator import itemgetter
+k = 5
+"""
 
 to_visit_list = []
 for i in range(len(dist_matrix)):
@@ -60,30 +83,37 @@ print(to_visit_list)
 # def localBeamSearch():
 # starting_row = random.randint(0,14)
 # starting_row = dist_matrix[starting_i]
-path_list = []
-starting_list = []
-k = 4
-to_visit_list.remove(starting_row)
-for i, el in enumerate(dist_matrix[starting_row]):
-  if(el != 0):
-    starting_list.append((i,el))
 
-print(starting_list)
-starting_list.sort(key= lambda x: x[1])
+def getStartingList(starting_node):
+  """
+  Main functionality is to return the list of nodes that need to be visited
+  Parameters:
+    startig_node: node to start from.
+  """
+  to_visit_list = []
+  starting_list = []
+  for i in range(len(dist_matrix)):
+    to_visit_list.append(i)
+  
+  to_visit_list.remove(starting_row)
+  for i, el in enumerate(dist_matrix[starting_row]):
+    if(el != 0):
+      starting_list.append((i,el))
 
-# print(starting_i)
-# print(starting_j)
-# print(starting_node)
-print(starting_list)
+  print(starting_list)
+  starting_list.sort(key= lambda x: x[1])
+  return starting_list
 
-print(starting_row)
-# localBeamSearch()
-print(to_visit_list)
-
-visits_count = 0
-really_final_list = []
 # passa a contagem de nodes visitados, node de início, lista de nodes para visitar
 def findSmallestCostOnRow(node_row, to_visit_list, final_node_list=[], count=0):
+  """
+  The main use for this function is to find the best path from the given node. It works recursively until the stop condition is met.
+  Parametes:
+    node_row: node from where to start looking the best path
+    to_visit_list: list of nodes to be visited
+    final_node_list: node list that's passed and returned at the end of the recursive calling
+    starting_node: passing on the starting node so it's possible to get some more clearer information at the end of the function
+  """
   curr_node = node_row
   # print("Iteration: ", count)
   visits_count = count
@@ -105,42 +135,78 @@ def findSmallestCostOnRow(node_row, to_visit_list, final_node_list=[], count=0):
     # chain resultante desse node
     curr_final_node_list.append(aux_list[0])
     visits_count += 1
-    findSmallestCostOnRow(count = visits_count, node_row = aux_list[0][0], to_visit_list = curr_to_visit_list, final_node_list = curr_final_node_list)
+    return findSmallestCostOnRow(count = visits_count, node_row = aux_list[0][0], to_visit_list = curr_to_visit_list, final_node_list = curr_final_node_list)
 
 
-# findSmallestCostOnRow(2, to_visit_list)
-
-def resetVisitList():
+def resetVisitList(starting_node):
+  """
+  Parametes:
+    starting_node: so it's possible to get the reset of the visited noteds list for the localBeamSearch function
+  """
   to_visit_list = []
   for i in range(len(dist_matrix)):
     to_visit_list.append(i)
-  # print(to_visit_list)
-  # starting_list = []
-  to_visit_list.remove(starting_row)
-  # print(to_visit_list)
+
+  to_visit_list.remove(starting_node)
   return to_visit_list
 
-starting_list = []
-for i, el in enumerate(dist_matrix[starting_row]):
-  if(el != 0):
-    starting_list.append((i,el))
+def getListOfSums(all_runs, starting_node):
+  """
+  Parametes:
+    all_runs: list of all the chosen k-nodes, where each element is the best path from the node
+    starting_node: passing on the starting node so it's possible to get some more clearer information at the end of the function
+  """
+  sum_by_run = []
+  for run in all_runs:
+    curr_sum = 0
+    print(f"{starting_node} -> {run[0][0]}")
+    for node in run:
+      curr_sum += node[1]
+    print(curr_sum)
+    sum_by_run.append(curr_sum)
 
-print(starting_list)
-starting_list.sort(key= lambda x: x[1])
-k = 4;
-ksmallest_nodes = starting_list[0:k]
-print(starting_list)
-print(ksmallest_nodes)
-all_runs = []
-really_final_list = []
-blabla =[]
-for node in ksmallest_nodes:
-  to_visit = resetVisitList()
-  print(node[0])
-  # all_runs.append(findSmallestCostOnRow(ksmallest_nodes[0][0], to_visit_list, really_final_list))
-  # tem que descobrir por que a lista não está sendo retornada
-  blabla = findSmallestCostOnRow(node[0], to_visit, really_final_list)
+  print(f"Starting from {starting_node}th node, best run: going to node {all_runs[sum_by_run.index(min(sum_by_run))][0][0]} with run: {all_runs[sum_by_run.index(min(sum_by_run))]}")
+
+  return sum_by_run
+
+# k -> beam width
+def localBeamSearch(k, starting_node):
+  """
+  Parametes:
+    k: beam width
+    starting_node: from wich node the search will start
+  """
+  starting_list = getStartingList(starting_node)
+  ksmallest_nodes = starting_list[0:k]
+  print(starting_list)
+  print(ksmallest_nodes)
+  all_runs = []
   really_final_list = []
-  print(type(blabla))
-  # print(findSmallestCostOnRow(ksmallest_nodes[0][0], to_visit, really_final_list))
+  aux_list = []
+  for node in ksmallest_nodes:
+    to_visit = resetVisitList(starting_row)
+    print(node[0])
+    aux_list = findSmallestCostOnRow(node[0], to_visit,really_final_list)
+    aux_list.insert(0,node)
+    print(aux_list)
+    really_final_list = []
+    all_runs.append(aux_list)
 
+  getListOfSums(all_runs, starting_row)
+
+
+
+if __name__ == "__main__":
+  print("-------------------- Solving with Local Beam Search --------------------")
+  starting_node = random.randint(0,14)
+  localBeamSearch(10, starting_node)
+
+  print("")
+
+  print("-------------------- Solving with Genetic Algorithm --------------------")
+  # initilalizing fitness function object using dist_list
+  fitness_dists = mlrose.TravellingSales(distances = dist_list)
+  problem_no_fit = mlrose.TSPOpt(length=15, fitness_fn=fitness_dists, maximize=False)
+  best_state, best_fitness = mlrose.genetic_alg(problem_no_fit,mutation_prob=0.2, max_attempts=100 , random_state=2)
+  print("Best state found is: ", best_state)
+  print("Fitness at the best state: ", best_fitness)
