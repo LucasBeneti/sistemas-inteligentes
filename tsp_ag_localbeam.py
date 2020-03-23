@@ -7,10 +7,10 @@ Original file is located at
     https://colab.research.google.com/drive/1qbRCLCbmK0ar3Pa6GmaICOh1KpVZA4Ud
 """
 
-# !pip install numpy mlrose
 
-# import numpy as np
 import mlrose
+import random
+from timeit import default_timer as timer
 
 # dist_list = [(0,1,2.7), (0,2,7.50), (1,4,3.20), (2,4,2.80), (2,5,3.12), (2,3,1.25), (3,5,5.35), (4,5,2.08)]
 # # initilalizing fitness function object using dist_list
@@ -25,7 +25,6 @@ import mlrose
 
 # matriz de distâncias para ser usada para a solução do problema
 
-import random
 
 dist_matrix = [[0, 29, 82, 46, 68, 52, 72, 42, 51, 55, 29, 74, 23, 72, 46], 
                [29, 0, 55, 46, 42, 43, 43, 23, 23, 31, 41, 51, 11, 52, 21], 
@@ -166,6 +165,7 @@ def getListOfSums(all_runs, starting_node):
     sum_by_run.append(curr_sum)
 
   print(f"Starting from {starting_node}th node, best run: going to node {all_runs[sum_by_run.index(min(sum_by_run))][0][0]} with run: {all_runs[sum_by_run.index(min(sum_by_run))]}")
+  print(f"Total run cost: {min(sum_by_run)}")
 
   return sum_by_run
 
@@ -198,15 +198,21 @@ def localBeamSearch(k, starting_node):
 
 if __name__ == "__main__":
   print("-------------------- Solving with Local Beam Search --------------------")
+  start1 = timer()
   starting_node = random.randint(0,14)
   localBeamSearch(10, starting_node)
+  end1 = timer()
+  print("execution time: {0:.4f} s".format(end1-start1))
 
   print("")
 
   print("-------------------- Solving with Genetic Algorithm --------------------")
+  start2= timer()
   # initilalizing fitness function object using dist_list
   fitness_dists = mlrose.TravellingSales(distances = dist_list)
   problem_no_fit = mlrose.TSPOpt(length=15, fitness_fn=fitness_dists, maximize=False)
   best_state, best_fitness = mlrose.genetic_alg(problem_no_fit,mutation_prob=0.2, max_attempts=100 , random_state=2)
   print("Best state found is: ", best_state)
   print("Fitness at the best state: ", best_fitness)
+  end2 = timer()
+  print("execution time: {0:.4f} s".format(end2-start2))
